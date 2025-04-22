@@ -10,32 +10,33 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
-import com.jme3.system.AppSettings;
-import com.jme3.system.JmeContext;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture2D;
 import com.jme3.util.BufferUtils;
-import javafx.scene.image.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
-
 public class OffscreenRendererApp extends SimpleApplication {
-
   private FrameBuffer offBuffer;
   private Texture2D offTex;
   private ViewPort offView;
-  private boolean hasRendered = false;
-  private int frameCount = 0;
-  ImageView imageElement;
-  Box box;
-  Geometry geom;
+  private ImageView imageElement;
+  private Box box;
+  private Geometry geom;
   private float angle = 0;
+
+  private ByteBuffer buffer;
+  private BufferedImage img;
+
+  private int currentWidth = -1;
+  private int currentHeight = -1;
+  private volatile int pendingResizeWidth = -1;
+  private volatile int pendingResizeHeight = -1;
 
   public void setImageElement(ImageView imageElement) {
     this.imageElement = imageElement;
@@ -48,14 +49,75 @@ public class OffscreenRendererApp extends SimpleApplication {
     Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
     mat.setColor("Color", ColorRGBA.Blue);
     geom.setMaterial(mat);
-
-    // Move the cube slightly forward so it's not at z=0
     geom.setLocalTranslation(0, 0, 0);
     rootNode.attachChild(geom);
 
-    // Set up offscreen view
     int width = settings.getWidth();
     int height = settings.getHeight();
+
+    doResize(width, height);
+  }
+
+  @Override
+  public void simpleUpdate(float tpf) {
+    // Defer resize
+    if (pendingResizeWidth > 2 && pendingResizeHeight > 2) {
+      if (pendingResizeWidth != currentWidth || pendingResizeHeight != currentHeight) {
+        doResize(pendingResizeWidth, pendingResizeHeight);
+      }
+      pendingResizeWidth = -1;
+      pendingResizeHeight = -1;
+    }
+
+    if (offBuffer == null || buffer == null || img == null || offView == null) return;
+
+    angle += tpf;
+    angle %= FastMath.TWO_PI;
+    Quaternion q = new Quaternion().fromAngles(angle, 0, angle);
+    geom.setLocalRotation(q);
+
+    rootNode.updateLogicalState(tpf);
+    rootNode.updateGeometricState();
+    renderManager.renderViewPort(offView, tpf);
+
+    renderer.readFrameBuffer(offBuffer, buffer);
+    for (int y = 0; y < currentHeight; y++) {
+      for (int x = 0; x < currentWidth; x++) {
+        int i = (x + (currentHeight - y - 1) * currentWidth) * 4;
+        int r = buffer.get(i) & 0xFF;
+        int g = buffer.get(i + 1) & 0xFF;
+        int b = buffer.get(i + 2) & 0xFF;
+        int a = buffer.get(i + 3) & 0xFF;
+        int argb = (a << 24) | (r << 16) | (g << 8) | b;
+        img.setRGB(x, y, argb);
+      }
+    }
+
+    if (imageElement != null) {
+      imageElement.setImage(convertToFxImage(img));
+    }
+  }
+
+  public void requestResize(int width, int height) {
+    if (width > 2 && height > 2) {
+      this.pendingResizeWidth = width;
+      this.pendingResizeHeight = height;
+    }
+  }
+
+  private void doResize(int width, int height) {
+    if (width <= 2 || height <= 2) {
+      System.out.println("Resize skipped: invalid dimensions (" + width + "x" + height + ")");
+      return;
+    }
+
+    System.out.println("Resizing to: " + width + "x" + height);
+    currentWidth = width;
+    currentHeight = height;
+
+    if (offView != null) {
+      renderManager.removeMainView(offView);
+    }
 
     offTex = new Texture2D(width, height, Image.Format.RGBA8);
     offBuffer = new FrameBuffer(width, height, 1);
@@ -69,71 +131,24 @@ public class OffscreenRendererApp extends SimpleApplication {
 
     offView = renderManager.createMainView("Offscreen View", offCam);
     offView.setClearFlags(true, true, true);
-    offView.setBackgroundColor(ColorRGBA.Red); // red for contrast
+    //offView.setBackgroundColor(ColorRGBA.LightGray);
     offView.setOutputFrameBuffer(offBuffer);
     offView.attachScene(rootNode);
-  }
 
-  @Override
-  public void simpleUpdate(float tpf) {
-    Quaternion q = new Quaternion();
-
-    if (offView.isEnabled()) {
-      angle += tpf;
-      angle %= FastMath.TWO_PI;
-      q.fromAngles(angle, 0, angle);
-
-      geom.setLocalRotation(q);
-      geom.updateLogicalState(tpf);
-      geom.updateGeometricState();
-    }
-
-    if (imageElement == null) return;
-    rootNode.updateLogicalState(tpf);
-    rootNode.updateGeometricState();
-
-    renderManager.renderViewPort(offView, tpf);
-
-    int width = settings.getWidth();
-    int height = settings.getHeight();
-
-    ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4);
-    renderer.readFrameBuffer(offBuffer, buffer);
-
-    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        int i = (x + (height - y - 1) * width) * 4;
-        int r = buffer.get(i) & 0xFF;
-        int g = buffer.get(i + 1) & 0xFF;
-        int b = buffer.get(i + 2) & 0xFF;
-        int a = buffer.get(i + 3) & 0xFF;
-        int argb = (a << 24) | (r << 16) | (g << 8) | b;
-        img.setRGB(x, y, argb);
-      }
-    }
-
-
-    imageElement.setImage(convertToFxImage(img));
-    //imageElement.setImage(new javafx.scene.image.Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLCL04mzrRXt7PmOaxXR8VNHpjzKnAEQ5gsA&s"));
-
-    System.out.println("✅ Rendered img");
-    hasRendered = true;
+    buffer = BufferUtils.createByteBuffer(width * height * 4);
+    img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
   }
 
   private static javafx.scene.image.Image convertToFxImage(BufferedImage image) {
-    WritableImage wr = null;
-    if (image != null) {
-      wr = new WritableImage(image.getWidth(), image.getHeight());
-      PixelWriter pw = wr.getPixelWriter();
-      for (int x = 0; x < image.getWidth(); x++) {
-        for (int y = 0; y < image.getHeight(); y++) {
-          pw.setArgb(x, y, image.getRGB(x, y));
-        }
+    if (image == null) return null;
+
+    WritableImage wr = new WritableImage(image.getWidth(), image.getHeight());
+    PixelWriter pw = wr.getPixelWriter();
+    for (int x = 0; x < image.getWidth(); x++) {
+      for (int y = 0; y < image.getHeight(); y++) {
+        pw.setArgb(x, y, image.getRGB(x, y));
       }
     }
-
-    return new ImageView(wr).getImage();
+    return wr;
   }
 }

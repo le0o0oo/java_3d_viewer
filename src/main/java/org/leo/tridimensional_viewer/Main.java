@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.leo.tridimensional_viewer.managers.RendererManager;
 
 import java.io.IOException;
 
@@ -17,9 +18,11 @@ public class Main extends Application {
 
     loader = new FXMLLoader(Main.class.getResource(currentView));
     Scene scene = new Scene(loader.load(), 1000, 600);
-    stage.setTitle("Hello!");
+    stage.setTitle("3D viewer");
     stage.setScene(scene);
     stage.show();
+
+    RendererManager.init();
   }
 
   public static void main(String[] args) {

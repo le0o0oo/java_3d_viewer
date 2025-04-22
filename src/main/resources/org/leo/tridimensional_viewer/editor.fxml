@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -11,6 +13,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.leo.tridimensional_viewer.controllers.EditorController">
     <top>
@@ -35,23 +40,51 @@
         </MenuBar>
     </top>
     <center>
-        <SplitPane dividerPositions="0.20254010695187163, 0.800802139037433" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <SplitPane dividerPositions="0.20234113712374582, 0.7876254180602007" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Add asset">
+                     <VBox.margin>
+                        <Insets top="2.0" />
+                     </VBox.margin>
+                     <graphic>
+                        <FontIcon iconLiteral="mdmz-plus" />
+                     </graphic>
+                  </Button>
+                  <ListView prefHeight="1000000.0" prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets top="2.0" />
+                     </VBox.margin>
+                  </ListView>
+               </children>
+               <padding>
+                  <Insets left="2.0" />
+               </padding>
+            </VBox>
                 <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" />
                 <AnchorPane prefHeight="100.0" prefWidth="129.0" />
             </items>
         </SplitPane>
     </center>
     <bottom>
-        <HBox alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="600.0" spacing="3.0" BorderPane.alignment="CENTER_RIGHT">
-            <children>
-                <Label text="Optimizing asset" />
-                <ProgressBar prefWidth="200.0" />
-            </children>
-            <padding>
-                <Insets left="5.0" right="5.0" />
-            </padding>
-        </HBox>
+      <StackPane mouseTransparent="true" BorderPane.alignment="CENTER_RIGHT">
+         <children>
+            <HBox alignment="CENTER_LEFT" mouseTransparent="true" prefHeight="0.0" prefWidth="600.0">
+               <StackPane.margin>
+                  <Insets left="5.0" />
+               </StackPane.margin>
+            </HBox>
+              <HBox alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="337.0" spacing="3.0">
+                  <children>
+                      <Label text="Optimizing asset" />
+                      <ProgressBar prefWidth="200.0" />
+                  </children>
+                  <padding>
+                      <Insets left="5.0" right="5.0" />
+                  </padding>
+              </HBox>
+         </children>
+      </StackPane>
     </bottom>
 </BorderPane>

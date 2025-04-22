@@ -16,13 +16,7 @@ public class EditorController {
   @FXML
   private void initialize() {
     System.out.println("EditorController initialized!");
-
-    Tab newTab = new Tab("nomeoggettoboh");
-    ImageView image = new ImageView();
-    newTab.setContent(image);
-
-    tabPane.getTabs().add(newTab);
-
+    
     TabManager.addTab("tab test");
   }
 

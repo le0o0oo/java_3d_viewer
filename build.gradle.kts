@@ -43,6 +43,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     implementation("org.openjfx:javafx-swing:17.0.1")
+    implementation("org.kordamp.ikonli:ikonli-material2-pack:12.4.0")
+    implementation("org.jmonkeyengine:jme3-plugins:3.8.0-stable")
 
     implementation("org.jmonkeyengine:jme3-core:${jmeVersion}")
     implementation("org.jmonkeyengine:jme3-desktop:${jmeVersion}")
