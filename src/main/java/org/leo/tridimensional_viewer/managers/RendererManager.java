@@ -14,6 +14,11 @@ public class RendererManager {
 
   public static void setImageView(ImageView imageView) {
     RendererManager.imageView = imageView;
+    app.setImageElement(imageView);
+  }
+
+  public static void setModelPath(String model) {
+    app.setModel(model);
   }
 
   public static void init() {

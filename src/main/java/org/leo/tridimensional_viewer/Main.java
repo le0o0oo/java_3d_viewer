@@ -9,13 +9,13 @@ import org.leo.tridimensional_viewer.managers.RendererManager;
 import java.io.IOException;
 
 public class Main extends Application {
-  private String currentView = "editor.fxml";
+  private static String currentView = "home.fxml";
   private static FXMLLoader loader;
+  private static Stage primaryStage;
 
   @Override
   public void start(Stage stage) throws IOException {
-
-
+    primaryStage = stage;
     loader = new FXMLLoader(Main.class.getResource(currentView));
     Scene scene = new Scene(loader.load(), 1000, 600);
     stage.setTitle("3D viewer");
@@ -23,6 +23,17 @@ public class Main extends Application {
     stage.show();
 
     RendererManager.init();
+  }
+
+  public static void setScene(String fxmlFile) {
+    try {
+      loader = new FXMLLoader(Main.class.getResource(fxmlFile));
+      Scene newScene = new Scene(loader.load(), 1000, 600);
+      primaryStage.setScene(newScene);
+      primaryStage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   public static void main(String[] args) {

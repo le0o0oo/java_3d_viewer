@@ -1,6 +1,9 @@
 package org.leo.tridimensional_viewer.renderer;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.plugins.FileLocator;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -9,6 +12,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image;
@@ -19,6 +23,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.nio.ByteBuffer;
 
 public class OffscreenRendererApp extends SimpleApplication {
@@ -29,6 +34,7 @@ public class OffscreenRendererApp extends SimpleApplication {
   private Box box;
   private Geometry geom;
   private float angle = 0;
+  Spatial model;
 
   private ByteBuffer buffer;
   private BufferedImage img;
@@ -44,13 +50,31 @@ public class OffscreenRendererApp extends SimpleApplication {
 
   @Override
   public void simpleInitApp() {
-    box = new Box(1, 1, 1);
-    geom = new Geometry("Box", box);
-    Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-    mat.setColor("Color", ColorRGBA.Blue);
-    geom.setMaterial(mat);
-    geom.setLocalTranslation(0, 0, 0);
-    rootNode.attachChild(geom);
+//    box = new Box(1, 1, 1);
+//    geom = new Geometry("Box", box);
+//    Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+//    mat.setColor("Color", ColorRGBA.Blue);
+//    geom.setMaterial(mat);
+//    geom.setLocalTranslation(0, 0, 0);
+
+
+    model = assetManager.loadModel("Models/DamagedHelmet.glb");
+    model.setLocalScale(1.0f);
+    model.setLocalTranslation(0, 0, 0);
+
+    rootNode.attachChild(model);
+
+    DirectionalLight light = new DirectionalLight();
+    light.setDirection(new Vector3f(-1, -1, -1).normalizeLocal());
+    rootNode.addLight(light);
+    AmbientLight ambient = new AmbientLight();
+    ambient.setColor(ColorRGBA.White.mult(0.3f));
+    rootNode.addLight(ambient);
+
+    cam.setLocation(new Vector3f(0, 2, 6));
+    cam.lookAt(Vector3f.ZERO, Vector3f.UNIT_Y);
+
+    //rootNode.attachChild(geom);
 
     int width = settings.getWidth();
     int height = settings.getHeight();
@@ -74,7 +98,8 @@ public class OffscreenRendererApp extends SimpleApplication {
     angle += tpf;
     angle %= FastMath.TWO_PI;
     Quaternion q = new Quaternion().fromAngles(angle, 0, angle);
-    geom.setLocalRotation(q);
+    model.setLocalRotation(q);
+
 
     rootNode.updateLogicalState(tpf);
     rootNode.updateGeometricState();
@@ -150,5 +175,33 @@ public class OffscreenRendererApp extends SimpleApplication {
       }
     }
     return wr;
+  }
+
+  public void setModel(String absolutePath) {
+    File file = new File(absolutePath);
+    if (!file.exists()) {
+      System.err.println("Model file does not exist: " + absolutePath);
+      return;
+    }
+
+    // Detach old model if any
+    if (model != null) {
+      rootNode.detachChild(model);
+    }
+
+    // Get parent directory and filename
+    String parentDir = file.getParent();   // <-- this is from java.io.File
+    String filename = file.getName();
+
+    // Unregister previous locator if necessary
+    assetManager.unregisterLocator(parentDir, FileLocator.class);
+    assetManager.registerLocator(parentDir, FileLocator.class);
+
+    // Load model using just the filename (relative to the locator)
+    model = assetManager.loadModel(filename);
+    model.setLocalScale(1.0f);
+    model.setLocalTranslation(0, 0, 0);
+
+    rootNode.attachChild(model);
   }
 }

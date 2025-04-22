@@ -52,7 +52,7 @@
                         <FontIcon iconLiteral="mdmz-plus" />
                      </graphic>
                   </Button>
-                  <ListView prefHeight="1000000.0" prefWidth="200.0">
+                  <ListView fx:id="files_list" prefHeight="1000000.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets top="2.0" />
                      </VBox.margin>

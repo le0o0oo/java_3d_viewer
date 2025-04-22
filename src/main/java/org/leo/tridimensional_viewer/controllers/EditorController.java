@@ -1,23 +1,38 @@
 package org.leo.tridimensional_viewer.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
+import org.leo.tridimensional_viewer.managers.FilesManager;
+import org.leo.tridimensional_viewer.managers.RendererManager;
 import org.leo.tridimensional_viewer.managers.TabManager;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EditorController {
   @FXML
   private TabPane tabPane;
+  @FXML
+  private ListView files_list;
 
   @FXML
   private void initialize() {
     System.out.println("EditorController initialized!");
-    
+
     TabManager.addTab("tab test");
+    files_list.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue != null) {
+        System.out.println("Selected item: " + newValue);
+        RendererManager.setModelPath(FilesManager.getBasePath().resolve(newValue.toString()).toString());
+      }
+    });
+
+
+    updateFilesList();
   }
 
   public TabPane getTabPane() {
@@ -62,5 +77,12 @@ public class EditorController {
       }
     }
     return null;
+  }
+
+  public void updateFilesList() {
+    files_list.getItems().clear();
+    FilesManager.files.forEach(file -> {
+      files_list.getItems().add(file);
+    });
   }
 }
