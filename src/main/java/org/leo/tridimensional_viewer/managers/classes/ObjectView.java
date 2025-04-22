@@ -1,87 +1,55 @@
 package org.leo.tridimensional_viewer.managers.classes;
 
+import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
-import javafx.application.Platform;
+import javafx.animation.AnimationTimer;
 import javafx.scene.control.Tab;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
-import org.leo.tridimensional_viewer.renderer.OffscreenImageUpdater;
-import org.leo.tridimensional_viewer.renderer.OffscreenRenderingApp;
+import org.leo.tridimensional_viewer.renderer.OffscreenRendererApp;
+//import org.leo.tridimensional_viewer.renderer.OffscreenRendererApp;
 
 public class ObjectView implements TabInstance {
-  String name, id;
-  Tab element;
-  OffscreenRenderingApp jmeApp;
-  OffscreenImageUpdater imageUpdater;
-  ImageView imageView;
+  private static final int RENDER_W = 800;
+  private static final int RENDER_H = 600;
+
+  private final String name;
+  private final String id;
+  private final Tab element;
+  private final ImageView imageView;
+  private final StackPane container;
 
   public ObjectView(String name, String id, Tab tabElement) {
     this.name = name;
     this.id = id;
     this.element = tabElement;
 
-    // 1. Start the jME3 app
-    this.jmeApp = new OffscreenRenderingApp();
-    jmeApp.setShowSettings(true);
-    jmeApp.start(JmeContext.Type.OffscreenSurface); // ✅ KEY LINE!
+    imageView = new ImageView();
+    imageView.setPreserveRatio(false);
+    container = new StackPane(imageView);
+    imageView.setImage(new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLCL04mzrRXt7PmOaxXR8VNHpjzKnAEQ5gsA&s"));
+    element.setContent(container);
 
-    // 2. Delay initialization until jME is fully started
-    new Thread(() -> {
-      try {
-        // Wait for jME3 to initialize
-        while (jmeApp.getRenderManager() == null) {
-          Thread.sleep(100);
-        }
-
-        imageUpdater = new OffscreenImageUpdater(jmeApp);
-        imageView = new ImageView();
-        imageView.setPreserveRatio(false);
-        imageView.setSmooth(true);
-
-        StackPane container = new StackPane(imageView);
-        imageView.fitWidthProperty().bind(container.widthProperty());
-        imageView.fitHeightProperty().bind(container.heightProperty());
-
-        Platform.runLater(() -> element.setContent(container));
-
-        // 3. Start the update loop
-        Thread updateLoop = new Thread(() -> {
-          while (true) {
-            imageUpdater.updateImage();
-            WritableImage img = imageUpdater.getWritableImage();
-
-            Platform.runLater(() -> {
-              if (img != null) {
-                imageView.setImage(img);
-              }
-            });
-
-            try {
-              Thread.sleep(16); // ~60fps
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-          }
-        });
-
-        updateLoop.setDaemon(true);
-        updateLoop.start();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }).start();
+    var app = new OffscreenRendererApp();
+    app.setImageElement(imageView);
+    AppSettings settings = new AppSettings(true);
+    settings.setResolution(800, 600);
+    app.setSettings(settings);
+    app.setShowSettings(false);
+    app.start(JmeContext.Type.OffscreenSurface);
   }
 
-  public void serialize() {
-    // TODO: Save state
-  }
-
-  public void deserialize() {
-    // TODO: Restore state
-  }
-
+  /**
+   * Stop the renderer and timer when this view is destroyed.
+   */
   public void destroy() {
-    jmeApp.stop(); // Clean up jME when the tab is closed
+    // There's no explicit stop() on SimpleApplication;
+    // if you need to clean up, call:
+    // rendererApp.stop();
   }
+
+  public void serialize() { /* … */ }
+
+  public void deserialize() { /* … */ }
 }

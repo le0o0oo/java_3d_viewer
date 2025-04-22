@@ -2,11 +2,8 @@ package org.leo.tridimensional_viewer;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.leo.tridimensional_viewer.controllers.EditorController;
-import org.leo.tridimensional_viewer.renderer.OffscreenRenderingApp;
 
 import java.io.IOException;
 

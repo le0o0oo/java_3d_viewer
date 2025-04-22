@@ -38,10 +38,11 @@ javafx {
 }
 
 dependencies {
-    implementation("org.controlsfx:controlsfx:11.2.1")
-    implementation("org.kordamp.ikonli:ikonli-javafx:12.3.1")
+    implementation("org.controlsfx:controlsfx:11.2.2")
+    implementation("org.kordamp.ikonli:ikonli-javafx:12.4.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    implementation("org.openjfx:javafx-swing:17.0.1")
 
     implementation("org.jmonkeyengine:jme3-core:${jmeVersion}")
     implementation("org.jmonkeyengine:jme3-desktop:${jmeVersion}")
