@@ -8,13 +8,14 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.leo.tridimensional_viewer.controllers.EditorController">
@@ -40,7 +41,7 @@
         </MenuBar>
     </top>
     <center>
-        <SplitPane dividerPositions="0.20234113712374582, 0.7876254180602007" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <SplitPane dividerPositions="0.20234113712374582, 0.7926421404682275" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
@@ -63,7 +64,24 @@
                </padding>
             </VBox>
                 <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" />
-                <AnchorPane prefHeight="100.0" prefWidth="129.0" />
+            <VBox prefHeight="350.0" prefWidth="256.0" spacing="2.0">
+               <children>
+                  <Label text="Props">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="resolution_slider" min="1.0" value="50.0" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="117.0">
+                     <children>
+                        <Label fx:id="resolution_label" text="Resolution: 50%" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </VBox>
             </items>
         </SplitPane>
     </center>

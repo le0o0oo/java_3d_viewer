@@ -21,8 +21,11 @@ public class RendererManager {
     app.setModel(model);
   }
 
+  public static void resize() {
+    Platform.runLater(() -> RendererManager.getApp().requestResize((int) (imageView.getBoundsInLocal().getWidth() * scaleFactor), (int) (imageView.getBoundsInLocal().getHeight() * scaleFactor)));
+  }
+
   public static void init() {
-    final double scaleFactor = 0.5; // 50% resolution
     // Wait for layout to complete before starting JME app
     Platform.runLater(() -> {
 //      double width = imageView.getBoundsInParent().getWidth();

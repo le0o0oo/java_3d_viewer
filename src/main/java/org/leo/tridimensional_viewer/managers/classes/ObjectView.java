@@ -44,6 +44,7 @@ public class ObjectView implements TabInstance {
     RendererManager.setImageView(imageView);
 
     imageView.boundsInParentProperty().addListener((obs, oldBounds, newBounds) -> {
+      System.out.println(RendererManager.scaleFactor);
       int newWidth = (int) (newBounds.getWidth() * RendererManager.scaleFactor);
       int newHeight = (int) (newBounds.getHeight() * RendererManager.scaleFactor);
       if (newWidth > 2 && newHeight > 2) {

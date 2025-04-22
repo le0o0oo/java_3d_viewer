@@ -1,9 +1,7 @@
 package org.leo.tridimensional_viewer.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import org.leo.tridimensional_viewer.managers.FilesManager;
 import org.leo.tridimensional_viewer.managers.RendererManager;
@@ -18,6 +16,10 @@ public class EditorController {
   private TabPane tabPane;
   @FXML
   private ListView files_list;
+  @FXML
+  private Slider resolution_slider;
+  @FXML
+  private Label resolution_label;
 
   @FXML
   private void initialize() {
@@ -29,6 +31,12 @@ public class EditorController {
         System.out.println("Selected item: " + newValue);
         RendererManager.setModelPath(FilesManager.getBasePath().resolve(newValue.toString()).toString());
       }
+    });
+    resolution_slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+      int value = (int) newValue.doubleValue();
+      resolution_label.setText("Resolution: " + String.valueOf(value) + "%");
+      RendererManager.scaleFactor = (double) value / 100;
+      RendererManager.resize();
     });
 
 
