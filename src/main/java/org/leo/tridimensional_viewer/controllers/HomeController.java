@@ -1,9 +1,11 @@
 package org.leo.tridimensional_viewer.controllers;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.leo.tridimensional_viewer.Main;
 import org.leo.tridimensional_viewer.managers.FilesManager;
 
@@ -29,4 +31,20 @@ public class HomeController {
       Main.setScene("editor.fxml");
     }
   }
+
+//  @FXML
+//  private void initialize() {
+//    // Create a PauseTransition with a specified duration (e.g., 3 seconds)
+//    PauseTransition pause = new PauseTransition(Duration.millis(500));
+//
+//    // Set an action to be performed after the pause
+//    pause.setOnFinished(event -> {
+//      final String path = "yourpath";
+//      FilesManager.setWorkingDir(path);
+//      Main.setScene("editor.fxml");
+//    });
+//
+//    // Start the pause
+//    pause.play();
+//  }
 }

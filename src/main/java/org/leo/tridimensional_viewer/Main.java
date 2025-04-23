@@ -4,7 +4,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.leo.tridimensional_viewer.controllers.EditorController;
 import org.leo.tridimensional_viewer.managers.RendererManager;
+import org.leo.tridimensional_viewer.managers.StatusManager;
 
 import java.io.IOException;
 

@@ -21,12 +21,15 @@ import com.jme3.util.BufferUtils;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import org.leo.tridimensional_viewer.managers.StatusManager;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 
 public class OffscreenRendererApp extends SimpleApplication {
+  private boolean initialized = false;
+
   private FrameBuffer offBuffer;
   private Texture2D offTex;
   private ViewPort offView;
@@ -46,6 +49,10 @@ public class OffscreenRendererApp extends SimpleApplication {
 
   public void setImageElement(ImageView imageElement) {
     this.imageElement = imageElement;
+  }
+
+  public boolean isInitialized() {
+    return initialized;
   }
 
   @Override
@@ -80,6 +87,9 @@ public class OffscreenRendererApp extends SimpleApplication {
     int height = settings.getHeight();
 
     doResize(width, height);
+
+    StatusManager.hide();
+    initialized = true;
   }
 
   @Override

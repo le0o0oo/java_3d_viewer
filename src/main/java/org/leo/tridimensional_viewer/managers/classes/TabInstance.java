@@ -15,4 +15,9 @@ public interface TabInstance {
    * Invoked when the tab gets closed.
    */
   public void destroy();
+
+  /**
+   * Invoked when the tab has to be initialized
+   */
+  public void init();
 }

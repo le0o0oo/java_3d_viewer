@@ -93,10 +93,10 @@
                   <Insets left="5.0" />
                </StackPane.margin>
             </HBox>
-              <HBox alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="337.0" spacing="3.0">
+              <HBox fx:id="status_pane" alignment="CENTER_RIGHT" prefHeight="23.0" prefWidth="337.0" spacing="3.0">
                   <children>
-                      <Label text="Optimizing asset" />
-                      <ProgressBar prefWidth="200.0" />
+                      <Label fx:id="status_lb" text="Optimizing asset" />
+                      <ProgressBar fx:id="status_progress" prefWidth="200.0" />
                   </children>
                   <padding>
                       <Insets left="5.0" right="5.0" />
