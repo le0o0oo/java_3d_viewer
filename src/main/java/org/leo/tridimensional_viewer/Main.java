@@ -25,6 +25,11 @@ public class Main extends Application {
     stage.show();
 
     RendererManager.init();
+
+    // Add an on-close request event
+    stage.setOnCloseRequest(event -> {
+      RendererManager.getApp().stop();
+    });
   }
 
   public static void setScene(String fxmlFile) {
